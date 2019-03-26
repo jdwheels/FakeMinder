@@ -1,4 +1,4 @@
-# FakeMinder
+# FakeMinder (Fork with Typescript)
 
 A fake implementation of CA's SiteMinder product that enables easy development of your SiteMinder integrated application without installing SiteMinder on your development environment.
 
