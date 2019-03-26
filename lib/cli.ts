@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-module.exports.create = function(inquirer, args, writeFile, done) {
-  var questions = [
+export const create = (inquirer, args, writeFile, done) => {
+  const questions = [
     {
       name: 'config_name',
       type: 'input',
@@ -92,8 +92,8 @@ module.exports.create = function(inquirer, args, writeFile, done) {
     }
   ];
 
-  inquirer.prompt(questions, function(answers) {
-    var new_config = {
+  inquirer.prompt(questions, (answers) => {
+    const new_config = {
       proxy: {
         port: answers.proxy_port,
         upstreamApps: [
@@ -114,7 +114,7 @@ module.exports.create = function(inquirer, args, writeFile, done) {
           account_locked: answers.account_locked_path,
           protected_by_default: false,
           path_filters: [
-            { url: answers.protected_path, protected: true }
+            {url: answers.protected_path, protected: true}
           ]
         }
       },
@@ -132,7 +132,7 @@ module.exports.create = function(inquirer, args, writeFile, done) {
       ]
     };
 
-    writeFile(answers.config_name, JSON.stringify(new_config, null, '\t'), function(err) {
+    writeFile(answers.config_name, JSON.stringify(new_config, null, '\t'), (err) => {
       done(answers.config_name, err);
     });
   });

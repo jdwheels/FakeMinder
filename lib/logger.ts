@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-var log = require('npmlog');
+const log = require('npmlog');
 
 log.heading = 'fakeminder';
 

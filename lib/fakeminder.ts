@@ -22,25 +22,25 @@
  * SOFTWARE.
  */
 
-var Cookies = require('cookies'),
-    qs = require('querystring'),
-    _ = require('underscore'),
-    url = require('url'),
-    Model = require('./model'),
-    pathfilter = require('./pathfilter'),
-    util = require('util'),
-    fm_util = require('./util'),
-    log;
+const Cookies = require('cookies');
+const qs = require('querystring');
+const _ = require('underscore');
+const url = require('url');
+const Model = require('./model');
+const pathfilter = require('./pathfilter');
+const util = require('util');
+const fm_util = require('./util');
+let log;
 
 import Config from './config';
 
 export default class FakeMinder {
-  public readonly config;
-  private sessions;
+  public readonly config: Config;
+  private readonly sessions;
   private emptySession;
-  private formcred;
-  private SESSION_COOKIE;
-  private FORMCRED_COOKIE;
+  private readonly formcred;
+  private readonly SESSION_COOKIE;
+  private readonly FORMCRED_COOKIE;
 
   constructor(filename, logger) {
     log = logger;
@@ -69,7 +69,7 @@ export default class FakeMinder {
   };
 
   private _redirectTo = (res, url_type) => {
-    var url = this._getUrl(url_type);
+    const url = this._getUrl(url_type);
     this._redirectToUrl(res, url);
   };
 
@@ -80,7 +80,7 @@ export default class FakeMinder {
   };
 
   private _setCookie = (req, res, cookie_name, cookie_value, options?) => {
-    var cookieJar = new Cookies(req, res);
+    const cookieJar = new Cookies(req, res);
     cookieJar.set(cookie_name, cookie_value, options);
   };
 
@@ -91,7 +91,7 @@ export default class FakeMinder {
   };
 
   private _notAuthenticated = (req, res) => {
-    var url;
+    let url;
 
     if (this.config.upstreamApp('sample_target').not_authenticated) {
       url = pathfilter.resolve(req.url, this._getUrl('not_authenticated'));
@@ -106,7 +106,7 @@ export default class FakeMinder {
   };
 
   private redirectOr404 = (req, res, url_type, response_message) => {
-    var url;
+    let url;
 
     if (this.config.upstreamApp('sample_target')[url_type]) {
       url = pathfilter.resolve(req.url, this._getUrl(url_type));
@@ -133,11 +133,12 @@ export default class FakeMinder {
   };
 
   public middleware = (req, res, next) => {
-    var func_array = [];
+    const func_array = [];
     // var self = this;
-    var end_func = () => {};
-    var next_func = () => {
-      var func = func_array.shift();
+    const end_func = () => {
+    };
+    const next_func = () => {
+      const func = func_array.shift();
       if (func) {
         func.call(this, req, res, next_func, end_func);
       }
@@ -155,7 +156,7 @@ export default class FakeMinder {
 
   /** Parse inbound SMSESSION cookie and load session details */
   public init = (req, res, next) => {
-    var cookieJar = new Cookies(req, res),
+    const cookieJar = new Cookies(req, res),
       smsession = cookieJar.get(this.SESSION_COOKIE),
       existing_session = this.sessions[smsession];
 
@@ -170,7 +171,7 @@ export default class FakeMinder {
 
   /** Handle logon requests by processing form POST data and generating a FORMCRED cookie */
   public logon = (req, res, next, end) => {
-    var post_data: any = '',
+    let post_data: any = '',
       formcred,
       user,
       smagentname,
@@ -190,7 +191,7 @@ export default class FakeMinder {
       post_data = qs.parse(post_data.toLowerCase());
 
       // If config dictates that an smagentname is required then validate against the POST data and return a 400 response if no good.
-      smagentname = this.config.siteminder.smagentname;
+      smagentname = this.config.siteminder().smagentname;
       if (smagentname !== '' && smagentname !== post_data.smagentname) {
         log_msg = util.format('SMAGENTNAME of %s not supplied in logon POST data.', smagentname);
         log.warn('#logon', log_msg);
@@ -228,14 +229,14 @@ export default class FakeMinder {
 
   /** Handle requests for protected resources. If a login/password change is in process validate accordingly */
   public protected = (req, res, next, options) => {
-    var auth_headers,
-      cookieJar = new Cookies(req, res),
-      formcred_cookie = cookieJar.get(this.FORMCRED_COOKIE),
-      formcred_session,
-      existing_session,
-      new_session,
-      user,
-      path_filter;
+    let auth_headers;
+    const cookieJar = new Cookies(req, res);
+    const formcred_cookie = cookieJar.get(this.FORMCRED_COOKIE);
+    let formcred_session;
+    let existing_session;
+    let new_session;
+    let user;
+    let path_filter;
 
     // Exit from this function early if the URL is not 'protected'
     path_filter = pathfilter.getPathFilter(this.config.upstreamApp('sample_target'), req.url);

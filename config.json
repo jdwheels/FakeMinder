@@ -1,23 +1,23 @@
 {
-	"proxy": {
+  "proxy": {
     "port": 8000,
     "upstreamApps": [
       "sample_target"
     ]
-	},
-	"siteminder": {
-		"sm_cookie": "SMSESSION",
+  },
+  "siteminder": {
+    "sm_cookie": "SMSESSION",
     "sm_cookie_domain": "",
     "formcred_cookie": "FORMCRED",
     "formcred_cookie_domain": "",
-		"userid_field": "USERNAME",
-		"password_field": "PASSWORD",
-		"target_field": "TARGET",
+    "userid_field": "USERNAME",
+    "password_field": "PASSWORD",
+    "target_field": "TARGET",
     "session_expiry_minutes": 20,
     "max_login_attempts": 3,
     "smagentname": "",
     "login_fcc": "/public/siteminderagent/login.fcc"
-	},
+  },
   "upstreamApps": {
     "sample_target": {
       "hostname": "localhost",
@@ -29,20 +29,23 @@
       "account_locked": "/system/error/accountlocked",
       "protected_by_default": false,
       "path_filters": [
-        { "url": "/protected", "protected": true }
+        {
+          "url": "/protected",
+          "protected": true
+        }
       ]
     }
   },
-	"users": [
-		{
+  "users": [
+    {
       "name": "bob",
-			"password": "test1234",
-			"auth_headers": {
-				"client-id": "cid123",
-				"user-id": "uid456"
-			},
+      "password": "test1234",
+      "auth_headers": {
+        "client-id": "cid123",
+        "user-id": "uid456"
+      },
       "login_attempts": 0,
       "locked": false
-		}
+    }
   ]
 }

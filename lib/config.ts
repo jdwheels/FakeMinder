@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-var fs = require('fs');
+const fs = require('fs');
 
 // @ts-ignore
 class FmProxy {
-  private port;
+  public readonly port;
   private upstreamApps;
 
   constructor(config) {
@@ -37,10 +37,10 @@ class FmProxy {
 
 class UpstreamApp {
   private proxy_pass;
-  private hostname;
-  private port;
+  public readonly hostname;
+  public readonly port;
   private logoff;
-  private not_authenticated;
+  public readonly not_authenticated;
   private bad_login;
   private bad_password;
   private account_locked;
@@ -62,17 +62,17 @@ class UpstreamApp {
 }
 
 class SiteMinder {
-  private sm_cookie;
-  private sm_cookie_domain;
-  private formcred_cookie;
-  private formcred_cookie_domain;
+  public readonly sm_cookie;
+  public readonly sm_cookie_domain;
+  public readonly formcred_cookie;
+  public readonly formcred_cookie_domain;
   private userid_field;
   private password_field;
   private target_field;
-  private session_expiry_minutes;
-  private max_login_attempts;
-  private smagentname;
-  private login_fcc;
+  public readonly session_expiry_minutes;
+  public readonly max_login_attempts;
+  public smagentname;
+  public readonly login_fcc;
 
   constructor(config) {
     this.sm_cookie = config.sm_cookie || "SMSESSION";
@@ -92,24 +92,24 @@ class SiteMinder {
 export default class Config {
   private _config: any = {};
 
-  private load = (filename) => {
+  public load = (filename) => {
     this._config = JSON.parse(fs.readFileSync(filename, 'utf8'));
   };
 
-  private proxy = () => {
+  public proxy = () => {
     // @ts-ignore
     return new FmProxy(this._config.proxy);
   };
 
-  private siteminder = () => {
+  public siteminder = () => {
     return new SiteMinder(this._config.siteminder);
   };
 
-  private upstreamApp = (name) => {
+  upstreamApp = (name) => {
     return new UpstreamApp(name, this._config.upstreamApps[name]);
   };
 
-  private users = () => {
+  public users = () => {
     return this._config.users;
   };
 }

@@ -180,7 +180,8 @@ describe('FakeMinder', function() {
       describe('and the form does not contain a matching smagentname value', function() {
         it('returns a 400 response', function(done) {
           // Arrange
-          subject.config.siteminder.smagentname = "custom_agent";
+          // subject.config.siteminder.smagentname = "custom_agent";
+          subject.config._config.siteminder.smagentname = "custom_agent";
           post_data = 'USER=' + user + '&PASSWORD=test1234&TARGET=' + target + "&SMAGENTNAME=blah";
 
           // Act
@@ -196,7 +197,7 @@ describe('FakeMinder', function() {
       describe('and the form does not contain a an smagentname value', function() {
         it('returns a 400 response', function(done) {
           // Arrange
-          subject.config.siteminder.smagentname = "custom_agent";
+          subject.config._config.siteminder.smagentname = "custom_agent";
           post_data = 'USER=' + user + '&PASSWORD=test1234&TARGET=' + target;
 
           // Act

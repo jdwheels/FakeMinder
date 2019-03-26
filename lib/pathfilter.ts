@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-var _ = require('underscore');
+const _ = require('underscore');
 
-var matchUrlAgainstPath = function(url, path, path_url, wildcard) {
+const matchUrlAgainstPath = (url, path, path_url, wildcard) => {
   // Match the path if it is an exact match with the URL.
   if (path_url === url) {
     return path;
@@ -46,16 +46,16 @@ var matchUrlAgainstPath = function(url, path, path_url, wildcard) {
   }
 };
 
-module.exports.getPathFilter = function(url_config, url) {
-  var result = { url: "{default}", protected: url_config.protected_by_default },
-      i,
-      path,
-      path_url,
-      wildcard,
-      path_segments_regex = /^\{(\d*)\}/,
-      path_segments_match,
-      url_segments,
-      match;
+export const getPathFilter = (url_config, url: string) => {
+  let result = {url: "{default}", protected: url_config.protected_by_default},
+    i,
+    path,
+    path_url,
+    wildcard,
+    path_segments_regex = /^{(\d*)}/,
+    path_segments_match,
+    url_segments,
+    match;
 
   if (!url_config.path_filters || !_.isArray(url_config.path_filters)) {
     return result;
@@ -115,12 +115,12 @@ module.exports.getPathFilter = function(url_config, url) {
   return { url: result.url, protected: result.protected };
 };
 
-module.exports.resolve = function(url, path_filter) {
-  var path_segments_regex = /^\{(\d*)\}/,
-      path_segments_match,
-      parsed_url = require('url').parse(url),
-      path_components_to_skip,
-      url_segments;
+export const resolve = (url, path_filter) => {
+  let path_segments_regex = /^{(\d*)}/,
+    path_segments_match,
+    parsed_url = require('url').parse(url),
+    path_components_to_skip,
+    url_segments;
 
   // Identify how many path segments to skip
   path_segments_match = path_filter.match(path_segments_regex);
