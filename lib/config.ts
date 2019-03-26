@@ -24,6 +24,7 @@
 
 var fs = require('fs');
 
+// @ts-ignore
 var Proxy = function(config) {
   var self = this;
 
@@ -71,6 +72,7 @@ var Config = function() {
   };
 
   this.proxy = function() {
+    // @ts-ignore
     return new Proxy(self._config.proxy);
   };
 

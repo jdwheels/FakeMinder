@@ -1,6 +1,6 @@
 var expect = require('expect.js'),
     sinon = require('sinon'),
-    util = require(__dirname + '/../lib/util');
+    util = require('../build/util');
 
 describe('Util', function() {
   describe('#redirectUrlFromRequest', function() {

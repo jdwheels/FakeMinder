@@ -1,6 +1,6 @@
 var assert = require('assert');
 var expect = require('expect.js');
-var Chain = require('../lib/chain.js');
+var Chain = require('../build/chain');
 
 describe('Chain', function() {
   var subject,

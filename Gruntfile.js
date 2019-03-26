@@ -93,11 +93,16 @@ module.exports = function(grunt) {
         dir: 'coverage'
       }
     },
-    clean: ['coverage'],
+    clean: ['coverage', 'build'],
     open: {
       cover: {
         path: 'coverage/lcov-report/index.html',
         app: 'Google Chrome'
+      }
+    },
+    ts: {
+      default: {
+        tsconfig: './tsconfig.json'
       }
     }
   });
@@ -113,15 +118,18 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-istanbul-coverage');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-open');
+  grunt.loadNpmTasks('grunt-ts');
 
   // Default task.
-  grunt.registerTask('default', ['clear', 'jshint', 'simplemocha:unit_test']);
-  grunt.registerTask('test', ['clear', 'simplemocha:unit_test']);
+  grunt.registerTask('default', ['clear', 'build', 'jshint', 'simplemocha:unit_test']);
+  grunt.registerTask('build', ['clean', 'ts']);
+  grunt.registerTask('test', ['clear', 'ts', 'simplemocha:unit_test']);
   grunt.registerTask('int-test', 'Execute integration tests against the sample app through the proxy', function() {
     // Make sure failed automation tests don't break the entire task
     // so we can shutdown both the FakeMinder and Express apps.
     grunt.option('force', true);
     grunt.task.run('clear');
+    grunt.task.run('build');
     grunt.task.run('fakeminder-start');
     grunt.task.run('express:sample_target');
     grunt.task.run('simplemocha:integration_test');
@@ -133,6 +141,7 @@ module.exports = function(grunt) {
     // so we can shutdown both the FakeMinder and Express apps.
     grunt.option('force', true);
     grunt.task.run('clear');
+    grunt.task.run('build');
     grunt.task.run('fakeminder-start');
     grunt.task.run('express:sample_target');
     grunt.task.run('casperjs');

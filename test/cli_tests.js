@@ -1,6 +1,6 @@
 var assert = require('assert'),
     expect = require('expect.js'),
-    cli = require(__dirname + '/../lib/cli');
+    cli = require('../build/cli');
 
 describe('Cli', function() {
   describe('#create', function() {

@@ -34,6 +34,7 @@
     "underscore": "1.9.1"
   },
   "devDependencies": {
+    "@types/node": "11.11.8",
     "casperjs": "1.1.4",
     "cookie": "0.3.1",
     "expect.js": "0.3.1",
@@ -48,10 +49,12 @@
     "grunt-istanbul-coverage": "0.1.4",
     "grunt-open": "0.2.4",
     "grunt-simple-mocha": "0.4.1",
+    "grunt-ts": "6.0.0-beta.22",
     "istanbul": "0.4.5",
     "mocha": "6.0.2",
     "request": "2.88.0",
     "sinon": "7.3.0",
-    "standard-version": "5.0.2"
+    "standard-version": "5.0.2",
+    "typescript": "3.3.4000"
   }
 }

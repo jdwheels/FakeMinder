@@ -3,9 +3,9 @@ var expect = require('expect.js'),
     url = require('url'),
     cookie = require('cookie'),
     _ = require('underscore'),
-    FakeMinder = require('../lib/fakeminder.js'),
-    Model = require('../lib/model.js'),
-    log = require(__dirname + '/../lib/logger'),
+    FakeMinder = require('../build/fakeminder'),
+    Model = require('../build/model'),
+    log = require('../build/logger'),
     sinon = require('sinon');
 
 describe('FakeMinder', function() {

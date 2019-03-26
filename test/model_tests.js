@@ -1,6 +1,6 @@
 var expect = require('expect.js'),
     _ = require('underscore'),
-    Model = require('../lib/model.js');
+    Model = require('../build/model');
 
 describe('User', function() {
   describe('#ctor', function() {

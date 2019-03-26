@@ -3,9 +3,9 @@
 var fs = require('fs'),
     program = require('commander'),
     inquirer = require('inquirer'),
-    server = require(__dirname + '/../lib/server'),
-    cli = require(__dirname + '/../lib/cli'),
-    log = require(__dirname + '/../lib/logger');
+    server = require(__dirname + '/../build/server'),
+    cli = require(__dirname + '/../build/cli'),
+    log = require(__dirname + '/../build/logger');
 
 program
   .version('0.0.1')

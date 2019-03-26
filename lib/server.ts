@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-var http = require('http'),
-    url = require('url'),
-    httpProxy = require('http-proxy'),
-    FakeMinder = require(__dirname + '/../lib/fakeminder.js'),
-    log = require(__dirname + '/../lib/logger'),
-    util = require('util');
+var http = require('http');
+var url = require('url');
+var httpProxy = require('http-proxy');
+var FakeMinderConstructor = require('./fakeminder');
+var log = require('./logger');
+var util = require('util');
 
 module.exports.start = function(config_file) {
   if (!require('fs').existsSync(config_file)) {
@@ -35,7 +35,7 @@ module.exports.start = function(config_file) {
     process.exit();
   }
 
-  var fm = new FakeMinder(config_file, log);
+  var fm = new FakeMinderConstructor(config_file, log);
   var port = fm.config.proxy().port;
   var upstreamApp = fm.config.upstreamApp('sample_target');
 

@@ -3,6 +3,8 @@
 
 node_modules
 coverage
+build
+.tscache
 
 docs
 

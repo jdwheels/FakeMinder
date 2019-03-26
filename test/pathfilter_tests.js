@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 
 describe('PathFilter', function() {
-  var subject = require('../lib/pathfilter'),
+  var subject = require('../build/pathfilter'),
       url_config;
 
   beforeEach(function() {

@@ -24,21 +24,21 @@
 
 var Cookies = require('cookies'),
     qs = require('querystring'),
-    Chain = require('../lib/chain.js'),
+    ChainConstructor = require('./chain'),
     _ = require('underscore'),
     url = require('url'),
-    Model = require('../lib/model.js'),
-    pathfilter = require('../lib/pathfilter'),
-    Config = require('../lib/config'),
+    Model = require('./model'),
+    pathfilter = require('./pathfilter'),
+    ConfigConstructor = require('./config'),
     util = require('util'),
-    fm_util = require(__dirname + '/../lib/util'),
+    fm_util = require('./util'),
     log;
 
 function FakeMinder(filename, logger) {
   var self = this;
   log = logger;
 
-  self.config = new Config();
+  self.config = new ConfigConstructor();
   self.config.load(filename);
 
   self.sessions = {};
@@ -164,7 +164,7 @@ FakeMinder.prototype.init = function(req, res, next) {
 /** Handle logon requests by processing form POST data and generating a FORMCRED cookie */
 FakeMinder.prototype.logon = function(req, res, next, end) {
   var self = this,
-      post_data = '',
+      post_data: any = '',
       formcred,
       user,
       smagentname,
