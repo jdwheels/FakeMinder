@@ -1,13 +1,13 @@
 var assert = require('assert');
 var expect = require('expect.js');
-var Chain = require('../build/chain');
+var FmChain = require('../build/chain');
 
-describe('Chain', function() {
+describe('FmChain', function() {
   var subject,
       foo;
 
   beforeEach(function() {
-    subject = new Chain();
+    subject = new FmChain();
     foo = function() {};
   });
 

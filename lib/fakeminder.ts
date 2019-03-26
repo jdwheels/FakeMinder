@@ -24,18 +24,18 @@
 
 var Cookies = require('cookies'),
     qs = require('querystring'),
-    Chain = require('./chain').default,
     _ = require('underscore'),
     url = require('url'),
     Model = require('./model'),
     pathfilter = require('./pathfilter'),
-    ConfigConstructor = require('./config'),
     util = require('util'),
     fm_util = require('./util'),
     log;
 
+import Config from './config';
+
 export default class FakeMinder {
-  private config;
+  public readonly config;
   private sessions;
   private emptySession;
   private formcred;
@@ -45,7 +45,7 @@ export default class FakeMinder {
   constructor(filename, logger) {
     log = logger;
 
-    this.config = new ConfigConstructor();
+    this.config = new Config();
     this.config.load(filename);
 
     this.sessions = {};

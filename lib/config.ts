@@ -25,68 +25,93 @@
 var fs = require('fs');
 
 // @ts-ignore
-var Proxy = function(config) {
-  var self = this;
+class FmProxy {
+  private port;
+  private upstreamApps;
 
-  self.port = config.port;
-  self.upstreamApps = config.upstreamApps;
-};
+  constructor(config) {
+    this.port = config.port;
+    this.upstreamApps = config.upstreamApps;
+  }
+}
 
-var UpstreamApp = function(name, config) {
-  var self = this;
+class UpstreamApp {
+  private proxy_pass;
+  private hostname;
+  private port;
+  private logoff;
+  private not_authenticated;
+  private bad_login;
+  private bad_password;
+  private account_locked;
+  private protected_by_default;
+  private path_filters;
 
-  self.proxy_pass = config.proxy_pass;
-  self.hostname = config.hostname;
-  self.port = config.port;
-  self.logoff = config.logoff;
-  self.not_authenticated = config.not_authenticated;
-  self.bad_login = config.bad_login;
-  self.bad_password = config.bad_password;
-  self.account_locked = config.account_locked;
-  self.protected_by_default = config.protected_by_default;
-  self.path_filters = config.path_filters;
-};
+  constructor(name, config) {
+    this.proxy_pass = config.proxy_pass;
+    this.hostname = config.hostname;
+    this.port = config.port;
+    this.logoff = config.logoff;
+    this.not_authenticated = config.not_authenticated;
+    this.bad_login = config.bad_login;
+    this.bad_password = config.bad_password;
+    this.account_locked = config.account_locked;
+    this.protected_by_default = config.protected_by_default;
+    this.path_filters = config.path_filters;
+  };
+}
 
-var SiteMinder = function(config) {
-  var self = this;
+class SiteMinder {
+  private sm_cookie;
+  private sm_cookie_domain;
+  private formcred_cookie;
+  private formcred_cookie_domain;
+  private userid_field;
+  private password_field;
+  private target_field;
+  private session_expiry_minutes;
+  private max_login_attempts;
+  private smagentname;
+  private login_fcc;
 
-  self.sm_cookie = config.sm_cookie || "SMSESSION";
-  self.sm_cookie_domain = config.sm_cookie_domain;
-  self.formcred_cookie = config.formcred_cookie || "FORMCRED";
-  self.formcred_cookie_domain = config.formcred_cookie_domain;
-  self.userid_field = config.userid_field || "USERNAME";
-  self.password_field = config.password_field || "PASSWORD";
-  self.target_field = config.target_field || "TARGET";
-  self.session_expiry_minutes = config.session_expiry_minutes || 20;
-  self.max_login_attempts = config.max_login_attempts || 3;
-  self.smagentname = config.smagentname || "";
-  self.login_fcc = config.login_fcc || "/public/siteminderagent/login.fcc";
-};
+  constructor(config) {
+    this.sm_cookie = config.sm_cookie || "SMSESSION";
+    this.sm_cookie_domain = config.sm_cookie_domain;
+    this.formcred_cookie = config.formcred_cookie || "FORMCRED";
+    this.formcred_cookie_domain = config.formcred_cookie_domain;
+    this.userid_field = config.userid_field || "USERNAME";
+    this.password_field = config.password_field || "PASSWORD";
+    this.target_field = config.target_field || "TARGET";
+    this.session_expiry_minutes = config.session_expiry_minutes || 20;
+    this.max_login_attempts = config.max_login_attempts || 3;
+    this.smagentname = config.smagentname || "";
+    this.login_fcc = config.login_fcc || "/public/siteminderagent/login.fcc";
+  };
+}
 
-var Config = function() {
-  var self = this;
-  this._config = {};
+export default class Config {
+  private _config: any = {};
 
-  this.load = function(filename) {
-    self._config = JSON.parse(fs.readFileSync(filename, 'utf8'));
+  private load = (filename) => {
+    this._config = JSON.parse(fs.readFileSync(filename, 'utf8'));
   };
 
-  this.proxy = function() {
+  private proxy = () => {
     // @ts-ignore
-    return new Proxy(self._config.proxy);
+    return new FmProxy(this._config.proxy);
   };
 
-  this.siteminder = function() {
-    return new SiteMinder(self._config.siteminder);
+  private siteminder = () => {
+    return new SiteMinder(this._config.siteminder);
   };
 
-  this.upstreamApp = function(name) {
-    return new UpstreamApp(name, self._config.upstreamApps[name]);
+  private upstreamApp = (name) => {
+    return new UpstreamApp(name, this._config.upstreamApps[name]);
   };
 
-  this.users = function() {
-    return self._config.users;
+  private users = () => {
+    return this._config.users;
   };
-};
+}
 
 module.exports = Config;

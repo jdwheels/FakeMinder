@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-export default class Chain {
+export default class FmChain {
   private queue = [];
 
   private error = (err) => {
@@ -46,4 +46,4 @@ export default class Chain {
   };
 }
 
-module.exports = Chain;
+module.exports = FmChain;
