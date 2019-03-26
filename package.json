@@ -35,7 +35,7 @@
     "cookie": "0.x",
     "expect.js": "0.x",
     "grunt": "~0.4.2",
-    "grunt-casperjs": "~1.4.0",
+    "grunt-casperjs": "~2.0.0",
     "grunt-clear": "~0.2.1",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-jshint": "~0.7.2",

@@ -89,9 +89,9 @@ casper.test.begin('Verify login page', 4, function suite(test) {
 casper.test.begin('Login with valid credentials', 6, function suite(test) {
   casper.start(upstreamApp.url + logon_url);
 
-  casper.then(function() {
+  casper.waitForSelector('form#logonform', function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test1234',
       'TARGET': protected_url
     }, true);
@@ -119,9 +119,9 @@ casper.test.begin('Login with valid credentials', 6, function suite(test) {
 casper.test.begin('Login with an invalid user ID', 2, function suite(test) {
   casper.start(upstreamApp.url + logon_url);
 
-  casper.then(function() {
+  casper.waitForSelector('form#logonform', function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob111',
+      'USER': 'bob111',
       'PASSWORD': 'test1234',
       'TARGET': protected_url
     }, true);
@@ -143,9 +143,9 @@ casper.test.begin('Login with an invalid user ID', 2, function suite(test) {
 casper.test.begin('Login with an invalid password', 2, function suite(test) {
   casper.start(upstreamApp.url + logon_url);
 
-  casper.then(function() {
+  casper.waitForSelector('form#logonform', function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test12345',
       'TARGET': protected_url
     }, true);
@@ -168,9 +168,9 @@ casper.test.begin('View the account lockout page after three login attempts', 7,
   casper.start(upstreamApp.url + logon_url);
 
   // Logon successfully first to ensure the number of logon attempts is reset to zero.
-  casper.then(function() {
+  casper.waitForSelector('form#logonform', function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test1234',
       'TARGET': protected_url
     }, true);
@@ -180,7 +180,7 @@ casper.test.begin('View the account lockout page after three login attempts', 7,
 
   casper.then(function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test12345',
       'TARGET': protected_url
     }, true);
@@ -195,7 +195,7 @@ casper.test.begin('View the account lockout page after three login attempts', 7,
 
   casper.then(function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test12345',
       'TARGET': protected_url
     }, true);
@@ -210,7 +210,7 @@ casper.test.begin('View the account lockout page after three login attempts', 7,
 
   casper.then(function() {
     this.fill('form#logonform', {
-      'USERNAME': 'bob',
+      'USER': 'bob',
       'PASSWORD': 'test12345',
       'TARGET': protected_url
     }, true);
