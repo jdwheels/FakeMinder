@@ -30,6 +30,8 @@ var fs = require('fs');
 var url = require('url');
 var Config = require(__dirname + '/../lib/config');
 var app = express();
+var bodyParser = require('body-parser');
+var errorHandler = require('errorhandler');
 
 var fakeminder_config = new Config();
 fakeminder_config.load(__dirname + '/../config.json', 'utf8');
@@ -40,16 +42,7 @@ var upstreamApp = fakeminder_config.upstreamApp('sample_target');
 app.set('port', upstreamApp.port);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.favicon());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
-
-// development only
-if ('development' === app.get('env')) {
-  app.use(express.errorHandler());
-}
+app.use(bodyParser.urlencoded());
 
 app.get('/', routes.index);
 app.get('/protected', routes.protected);
@@ -59,6 +52,13 @@ app.get('/system/error/notauthenticated', routes.not_authenticated);
 app.get('/system/error/badlogin', routes.bad_login);
 app.get('/system/error/badpassword', routes.bad_password);
 app.get('/system/error/accountlocked', routes.account_locked);
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+// development only
+if ('development' === app.get('env')) {
+  app.use(errorHandler());
+}
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
