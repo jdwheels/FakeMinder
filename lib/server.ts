@@ -22,49 +22,48 @@
  * SOFTWARE.
  */
 
-import { IRequest } from "./types";
-
-var http = require('http');
-var url = require('url');
-var httpProxy = require('http-proxy');
-import FakeMinder from './fakeminder';
+import http, { IncomingMessage, ServerResponse } from 'http';
 import ErrnoException = NodeJS.ErrnoException;
-import { Request, Response } from "express";
-var log = require('./logger');
-var util = require('util');
+import httpProxy from 'http-proxy';
+import util from 'util';
+import FakeMinder from './fakeminder';
 
-module.exports.start = function(config_file: string) {
+import log from 'npmlog';
+
+export const start = (config_file: string) => {
   if (!require('fs').existsSync(config_file)) {
     log.error('#server', 'Config file %s does not exist', config_file);
     process.exit();
   }
 
-  var fm = new FakeMinder(config_file, log);
-  var port = fm.config.proxy().port;
-  var upstreamApp = fm.config.upstreamApp('sample_target');
+  // @ts-ignore
+  const fm = new FakeMinder(config_file, log);
+  const port = fm.config.proxy().port;
+  const upstreamApp = fm.config.upstreamApp('sample_target');
 
-  var proxy = httpProxy.createProxyServer();
-  var server = http.createServer(function(req: IRequest, res: Response) {
-    fm.middleware(req, res, function() {
+  const proxy = httpProxy.createProxyServer();
+  const server = http.createServer((req, res) => {
+    fm.middleware(req, res, () => {
       proxy.web(req, res, {
         target: {
           host: upstreamApp.hostname,
-          port: upstreamApp.port
-        }
+          port: String(upstreamApp.port),
+        },
       });
     });
   }).listen(port);
 
   log.info('#server', 'Listening on port ' + port);
 
-  proxy.on('error', function(err: ErrnoException, req: Request, res: Response) {
+  proxy.on('error', (err: ErrnoException, req: IncomingMessage, res: ServerResponse) => {
     if (err.code === 'ECONNREFUSED') {
-      log.error('#server', 'Connection refused! Make sure the target application %s:%d is running', upstreamApp.hostname, upstreamApp.port);
+      log.error('#server', 'Connection refused! Make sure the target application %s:%d is running',
+        upstreamApp.hostname, upstreamApp.port);
     }
   });
 
-  proxy.on('proxyRes', function(req: IRequest, res: Response, response: Response) {
-    var message = util.format('%s %s => %d', req.method, req.url, response.statusCode);
+  proxy.on('proxyRes', (req: IncomingMessage, res: IncomingMessage, response: ServerResponse) => {
+    const message = util.format('%s %s => %d', req.method, req.url, response.statusCode);
 
     if (response.statusCode >= 500) {
       log.error('#server', message);

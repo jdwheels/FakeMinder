@@ -1,7 +1,7 @@
 var expect = require('expect.js'),
     fs = require('fs'),
     sinon = require('sinon'),
-    Config = require('../build/config');
+    Config = require('../build/config').default;
 
 describe('Config', function() {
   var subject,

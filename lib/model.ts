@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-import { IFormCred, IFormCredOptions, IFormCredStatus, ISession, ISessionOptions, IUserOptions } from "./types";
+import crypto from 'crypto';
+import _ from 'underscore';
+import { IFormCred, IFormCredOptions, IFormCredStatus, ISession, ISessionOptions, IUser, IUserOptions } from './types';
 
-const crypto = require('crypto'),
-  _ = require('underscore');
+export class User implements IUser {
+  public name?: string;
+  public password?: string;
+  public auth_headers: { [name: string]: string; };
+  public login_attempts: number;
+  public locked: boolean;
 
-export class User {
-  private name?: string;
-  private password?: string;
-  private auth_headers: { [name: string]: string; };
-  private login_attempts: number;
-  private locked: boolean;
-
-  constructor(options: Partial<IUserOptions>) {
+  constructor(options?: Partial<IUserOptions>) {
     if (!options) {
       options = {};
     }
@@ -44,21 +43,20 @@ export class User {
     this.auth_headers = options.auth_headers || {};
     this.login_attempts = options.login_attempts || 0;
     this.locked = options.locked || false;
-  };
+  }
 
   public failedLogon(max_login_attempts: number) {
     this.login_attempts += 1;
     if (this.login_attempts >= max_login_attempts) {
       this.locked = true;
     }
-  };
+  }
 
   public save(data_store: IUserOptions[]) {
-    let record = _.findWhere(data_store, {name: this.name});
+    let record: Partial<IUser> | undefined = _.findWhere(data_store, {name: this.name});
 
     if (!record) {
       record = {};
-      data_store.push(record);
     }
 
     record.name = this.name;
@@ -66,13 +64,15 @@ export class User {
     record.auth_headers = this.auth_headers;
     record.login_attempts = this.login_attempts;
     record.locked = this.locked;
-  };
+
+    data_store.push(record as IUser);
+  }
 }
 
 export class Session implements ISession {
-  session_id: string;
-  expiration: any;
-  user: any;
+  public session_id: string;
+  public expiration: any;
+  public user: any;
 
   constructor(options: Partial<ISessionOptions>) {
     if (!options) {
@@ -84,12 +84,12 @@ export class Session implements ISession {
     this.expiration = options.expiration;
   }
 
-  resetExpiration(session_timeout: number) {
+  public resetExpiration(session_timeout: number) {
     const new_expiration = new Date(new Date().getTime() + 20 * 60000);
     this.expiration = new_expiration.toJSON();
   }
 
-  hasExpired() {
+  public hasExpired() {
     const expiration_date = new Date(this.expiration);
     return (+expiration_date < +new Date());
   }
@@ -101,7 +101,7 @@ export class FormCred implements IFormCred {
   public status?: keyof IFormCredStatus;
   public target_url?: string;
 
-  constructor(options: Partial<IFormCredOptions>) {
+  constructor(options?: Partial<IFormCredOptions>) {
     if (!options) {
       options = {};
     }
@@ -116,5 +116,5 @@ export class FormCred implements IFormCred {
 export const FormCredStatus = {
   good_login: 'good_login',
   bad_login: 'bad_login',
-  bad_password: 'bad_password'
+  bad_password: 'bad_password',
 };

@@ -1,18 +1,19 @@
-import { Request } from "express";
-import { LogLevels } from "npmlog";
+import { IncomingMessage, ServerResponse } from 'http';
+import { Socket } from 'net';
+import { LogLevels } from 'npmlog';
 
 export interface IConfig {
   proxy: IFmProxyConfig;
   siteminder: ISiteminderConfig;
   upstreamApps: {
     [name: string]: IUpstreamAppConfig;
-  }
+  };
   users: IUserOptions[];
 }
 
 export type IUrlType = Pick<IUpstreamAppConfig,
-  "proxy_pass" | "hostname" | "logoff" | "not_authenticated" | "bad_login" | "bad_password" | "account_locked"
->
+  'proxy_pass' | 'hostname' | 'logoff' | 'not_authenticated' | 'bad_login' | 'bad_password' | 'account_locked'
+>;
 
 export interface IUpstreamAppConfig {
   proxy_pass: string;
@@ -23,11 +24,11 @@ export interface IUpstreamAppConfig {
   bad_login: string;
   bad_password: string;
   account_locked: string;
-  protected_by_default: boolean
+  protected_by_default: boolean;
   path_filters: Array<{
     url: string;
     protected: boolean;
-  }>
+  }>;
 }
 
 export interface ISiteminderConfig {
@@ -51,11 +52,11 @@ export interface ISessionOptions {
 }
 
 export interface IUserOptions {
-  name: string;
-  password: string;
+  name?: string;
+  password?: string;
   auth_headers: {
-    [name: string]: string
-  }
+    [name: string]: string,
+  };
   login_attempts: number;
   locked: boolean;
 }
@@ -68,9 +69,9 @@ export interface IFormCredOptions {
 }
 
 export interface IFormCredStatus {
-  good_login: 'string',
-  bad_login: 'string',
-  bad_password: 'string'
+  good_login: 'string';
+  bad_login: 'string';
+  bad_password: 'string';
 }
 
 export interface ICliOptions {
@@ -102,13 +103,15 @@ export interface IFmProxyConfig {
   upstreamApps: string[];
 }
 
-// @ts-ignore
-export interface IRequest extends Request {
+export type IRequest = IncomingMessage & {
+  url: string;
   fm_session: ISession;
-  connection: {
+  connection: Socket & {
     encrypted: boolean;
-  }
-}
+  };
+};
+
+export type IResponse = ServerResponse;
 
 export interface ISession {
   session_id: string;
@@ -122,12 +125,12 @@ export interface ISession {
 export interface IFormCred {
   formcred_id: string;
   user?: IUserOptions;
-  status?: keyof IFormCredStatus;
+  status?: string;
   target_url?: string;
 }
 
 export interface ILogger {
-  (level: LogLevels | string, prefix: string, message: string, ...args: any[]): void
+  (level: LogLevels | string, prefix: string, message: string, ...args: any[]): void;
   silly(prefix: string, message: string, ...args: any[]): void;
   verbose(prefix: string, message: string, ...args: any[]): void;
   info(prefix: string, message: string, ...args: any[]): void;
@@ -137,3 +140,8 @@ export interface ILogger {
 }
 
 export type AnyFunction = (...args: any[]) => any;
+
+export interface IUser extends IUserOptions {
+  failedLogon: (max_login_attempts: number) => void;
+  save: (data_store: IUserOptions[]) => void;
+}

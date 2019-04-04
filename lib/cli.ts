@@ -23,9 +23,9 @@
  */
 
 import ErrnoException = NodeJS.ErrnoException;
-import { Inquirer, Questions } from "inquirer"
-import { ICliOptions } from "./types";
-import { PathLike } from "fs";
+import { PathLike } from 'fs';
+import { Inquirer, Questions } from 'inquirer';
+import { ICliOptions } from './types';
 
 export const create = (inquirer: Inquirer,
                        args: any,
@@ -33,72 +33,74 @@ export const create = (inquirer: Inquirer,
                                    callback: (err: NodeJS.ErrnoException) => void) => void,
                        done: (configName: string, err: ErrnoException) => void) => {
   const questions: Questions<ICliOptions> = [
+    /* tslint:disable:max-line-length */
     {
       name: 'config_name',
       type: 'input',
       message: 'Enter a name for the new configuration file',
-      default: 'new_config.json'
+      default: 'new_config.json',
     },
     {
       name: 'proxy_port',
       type: 'input',
       message: 'Enter the port the proxy should listen on',
-      default: 8000
+      default: 8000,
     },
     {
       name: 'upstream_app_hostname',
       type: 'input',
       message: 'Enter the hostname or IP address of the upstream application',
-      default: 'localhost'
+      default: 'localhost',
     },
     {
       name: 'upstream_app_port',
       type: 'input',
       message: 'Enter the port to use to connect to the upstream application',
-      default: '80'
+      default: '80',
     },
     {
       name: 'siteminder_smagentname',
       type: 'input',
       message: 'Enter the value of the SMAGENTNAME post parameter',
-      default: ''
+      default: '',
     },
     {
       name: 'logoff_path',
       type: 'input',
       message: 'Enter the relative URL hosted by the upstream application for logging off a user',
-      default: '/system/logout'
+      default: '/system/logout',
     },
     {
       name: 'not_authenticated_path',
       type: 'input',
       message: 'Enter the relative URL hosted by the upstream application for redirecting unauthenticated users',
-      default: '/system/error/notauthenticated'
+      default: '/system/error/notauthenticated',
     },
     {
       name: 'bad_login_path',
       type: 'input',
-      message: 'Enter the relative URL hosted by the upstream application for redirecting users that have entered an invalid username',
-      default: '/system/error/badlogin'
+      message: `Enter the relative URL hosted by the upstream application for redirecting users that have entered an invalid username`,
+      default: '/system/error/badlogin',
     },
     {
       name: 'bad_password_path',
       type: 'input',
       message: 'Enter the relative URL hosted by the upstream application for redirecting users that have entered an invalid password',
-      default: '/system/error/badpassword'
+      default: '/system/error/badpassword',
     },
     {
       name: 'account_locked_path',
       type: 'input',
       message: 'Enter the relative URL hosted by the upstream application for redirecting users who\'s account is locked',
-      default: '/system/error/accountlocked'
+      default: '/system/error/accountlocked',
     },
     {
       name: 'protected_path',
       type: 'input',
       message: 'Enter the relative URL hosted by the upstream application containing the protected resources',
-      default: '/protected'
-    }
+      default: '/protected',
+    },
+    /* tslint:enable:max-line-length */
   ];
 
   // @ts-ignore
@@ -107,11 +109,11 @@ export const create = (inquirer: Inquirer,
       proxy: {
         port: answers.proxy_port,
         upstreamApps: [
-          'app'
-        ]
+          'app',
+        ],
       },
       siteminder: {
-        smagentname: answers.siteminder_smagentname
+        smagentname: answers.siteminder_smagentname,
       },
       upstreamApps: {
         app: {
@@ -124,9 +126,9 @@ export const create = (inquirer: Inquirer,
           account_locked: answers.account_locked_path,
           protected_by_default: false,
           path_filters: [
-            {url: answers.protected_path, protected: true}
-          ]
-        }
+            {url: answers.protected_path, protected: true},
+          ],
+        },
       },
       users: [
         {
@@ -134,12 +136,12 @@ export const create = (inquirer: Inquirer,
           password: 'test1234',
           auth_headers: {
             'client-id': 'cid123',
-            'user-id': 'uid456'
+            'user-id': 'uid456',
           },
           login_attempts: 0,
-          locked: false
-        }
-      ]
+          locked: false,
+        },
+      ],
     };
 
     writeFile(answers.config_name, JSON.stringify(new_config, null, '\t'), (err: ErrnoException) => {

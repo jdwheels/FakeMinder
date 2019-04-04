@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+/* tslint:disable:no-var-requires*/
 const log = require('npmlog');
 
 log.heading = 'fakeminder';

@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-import { IRequest } from "./types";
+import { IRequest } from './types';
 
-const url = require('url');
+import url from 'url';
 
 export const redirectUrlFromRequest = (req: IRequest, path: string) => {
-  let path_and_query: string[],
-    query_and_fragment,
-    pathname,
-    search,
-    hash,
-    redirect_url;
+  let path_and_query: string[];
+  let query_and_fragment;
+  let pathname;
+  let search;
+  let hash;
+  let redirect_url;
 
   path_and_query = path.split('?');
   pathname = path_and_query[0] || '/';
@@ -49,9 +49,9 @@ export const redirectUrlFromRequest = (req: IRequest, path: string) => {
   redirect_url = {
     protocol: req.connection.encrypted ? 'https' : 'http',
     host: req.headers.host,
-    pathname: pathname,
-    search: search,
-    hash: hash
+    pathname,
+    search,
+    hash,
   };
 
   return url.format(redirect_url);

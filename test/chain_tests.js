@@ -1,6 +1,6 @@
 var assert = require('assert');
 var expect = require('expect.js');
-var FmChain = require('../build/chain');
+var FmChain = require('../build/chain').default;
 
 describe('FmChain', function() {
   var subject,
