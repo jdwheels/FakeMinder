@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
+import { IRequest } from "./types";
+
 const url = require('url');
 
-export const redirectUrlFromRequest = (req, path: string) => {
+export const redirectUrlFromRequest = (req: IRequest, path: string) => {
   let path_and_query: string[],
     query_and_fragment,
     pathname,

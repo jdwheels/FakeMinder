@@ -22,14 +22,18 @@
  * SOFTWARE.
  */
 
+import { IRequest } from "./types";
+
 var http = require('http');
 var url = require('url');
 var httpProxy = require('http-proxy');
 import FakeMinder from './fakeminder';
+import ErrnoException = NodeJS.ErrnoException;
+import { Request, Response } from "express";
 var log = require('./logger');
 var util = require('util');
 
-module.exports.start = function(config_file) {
+module.exports.start = function(config_file: string) {
   if (!require('fs').existsSync(config_file)) {
     log.error('#server', 'Config file %s does not exist', config_file);
     process.exit();
@@ -40,7 +44,7 @@ module.exports.start = function(config_file) {
   var upstreamApp = fm.config.upstreamApp('sample_target');
 
   var proxy = httpProxy.createProxyServer();
-  var server = http.createServer(function(req, res) {
+  var server = http.createServer(function(req: IRequest, res: Response) {
     fm.middleware(req, res, function() {
       proxy.web(req, res, {
         target: {
@@ -53,13 +57,13 @@ module.exports.start = function(config_file) {
 
   log.info('#server', 'Listening on port ' + port);
 
-  proxy.on('error', function(err, req, res) {
+  proxy.on('error', function(err: ErrnoException, req: Request, res: Response) {
     if (err.code === 'ECONNREFUSED') {
       log.error('#server', 'Connection refused! Make sure the target application %s:%d is running', upstreamApp.hostname, upstreamApp.port);
     }
   });
 
-  proxy.on('proxyRes', function(req, res, response) {
+  proxy.on('proxyRes', function(req: IRequest, res: Response, response: Response) {
     var message = util.format('%s %s => %d', req.method, req.url, response.statusCode);
 
     if (response.statusCode >= 500) {

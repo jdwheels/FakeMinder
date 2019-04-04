@@ -22,21 +22,24 @@
  * SOFTWARE.
  */
 
-export default class FmChain {
-  private queue = [];
+import ErrnoException = NodeJS.ErrnoException;
+import { AnyFunction } from "./types";
 
-  private error = (err) => {
+export default class FmChain {
+  private queue: AnyFunction[] = [];
+
+  private error = (err: ErrnoException) => {
 
   };
 
-  private next = (data?) => {
+  private next = (data?: any) => {
     const func = this.queue.shift();
     if (func) {
       func(this.error, this.next, data);
     }
   };
 
-  public then = (func) => {
+  public then = (func: AnyFunction) => {
     this.queue.push(func);
     return this;
   };

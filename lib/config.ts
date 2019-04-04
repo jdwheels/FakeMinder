@@ -22,32 +22,34 @@
  * SOFTWARE.
  */
 
+import { IConfig, IFmProxyConfig, ISiteminderConfig, IUpstreamAppConfig } from "./types";
+
 const fs = require('fs');
 
 // @ts-ignore
 class FmProxy {
-  public readonly port;
-  private upstreamApps;
+  public readonly port: number;
+  private upstreamApps: string[];
 
-  constructor(config) {
+  constructor(config: IFmProxyConfig) {
     this.port = config.port;
     this.upstreamApps = config.upstreamApps;
   }
 }
 
-class UpstreamApp {
-  private proxy_pass;
-  public readonly hostname;
-  public readonly port;
-  private logoff;
-  public readonly not_authenticated;
-  private bad_login;
-  private bad_password;
-  private account_locked;
-  private protected_by_default;
-  private path_filters;
+class UpstreamApp implements IUpstreamAppConfig {
+  public proxy_pass: any;
+  public readonly hostname: string;
+  public readonly port: number;
+  public logoff: string;
+  public readonly not_authenticated: string;
+  public bad_login: string;
+  public bad_password: string;
+  public account_locked: string;
+  public protected_by_default: boolean;
+  public path_filters: { url: string; protected: boolean; }[];
 
-  constructor(name, config) {
+  constructor(name: string, config: IUpstreamAppConfig) {
     this.proxy_pass = config.proxy_pass;
     this.hostname = config.hostname;
     this.port = config.port;
@@ -62,19 +64,19 @@ class UpstreamApp {
 }
 
 class SiteMinder {
-  public readonly sm_cookie;
-  public readonly sm_cookie_domain;
-  public readonly formcred_cookie;
-  public readonly formcred_cookie_domain;
-  private userid_field;
-  private password_field;
-  private target_field;
-  public readonly session_expiry_minutes;
-  public readonly max_login_attempts;
-  public smagentname;
-  public readonly login_fcc;
+  public readonly sm_cookie: string;
+  public readonly sm_cookie_domain?: string;
+  public readonly formcred_cookie: string;
+  public readonly formcred_cookie_domain?: string;
+  private userid_field: string;
+  private password_field: string;
+  private target_field: string;
+  public readonly session_expiry_minutes: number;
+  public readonly max_login_attempts: number;
+  public smagentname: string;
+  public readonly login_fcc: string;
 
-  constructor(config) {
+  constructor(config: Partial<ISiteminderConfig>) {
     this.sm_cookie = config.sm_cookie || "SMSESSION";
     this.sm_cookie_domain = config.sm_cookie_domain;
     this.formcred_cookie = config.formcred_cookie || "FORMCRED";
@@ -90,14 +92,14 @@ class SiteMinder {
 }
 
 export default class Config {
-  private _config: any = {};
+  // @ts-ignore
+  private _config: IConfig = {};
 
-  public load = (filename) => {
+  public load = (filename: string) => {
     this._config = JSON.parse(fs.readFileSync(filename, 'utf8'));
   };
 
   public proxy = () => {
-    // @ts-ignore
     return new FmProxy(this._config.proxy);
   };
 
@@ -105,7 +107,7 @@ export default class Config {
     return new SiteMinder(this._config.siteminder);
   };
 
-  upstreamApp = (name) => {
+  upstreamApp = (name: string): IUpstreamAppConfig => {
     return new UpstreamApp(name, this._config.upstreamApps[name]);
   };
 

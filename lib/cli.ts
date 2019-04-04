@@ -22,8 +22,17 @@
  * SOFTWARE.
  */
 
-export const create = (inquirer, args, writeFile, done) => {
-  const questions = [
+import ErrnoException = NodeJS.ErrnoException;
+import { Inquirer, Questions } from "inquirer"
+import { ICliOptions } from "./types";
+import { PathLike } from "fs";
+
+export const create = (inquirer: Inquirer,
+                       args: any,
+                       writeFile: (path: PathLike | number, data: any,
+                                   callback: (err: NodeJS.ErrnoException) => void) => void,
+                       done: (configName: string, err: ErrnoException) => void) => {
+  const questions: Questions<ICliOptions> = [
     {
       name: 'config_name',
       type: 'input',
@@ -92,6 +101,7 @@ export const create = (inquirer, args, writeFile, done) => {
     }
   ];
 
+  // @ts-ignore
   inquirer.prompt(questions, (answers) => {
     const new_config = {
       proxy: {
@@ -132,7 +142,7 @@ export const create = (inquirer, args, writeFile, done) => {
       ]
     };
 
-    writeFile(answers.config_name, JSON.stringify(new_config, null, '\t'), (err) => {
+    writeFile(answers.config_name, JSON.stringify(new_config, null, '\t'), (err: ErrnoException) => {
       done(answers.config_name, err);
     });
   });

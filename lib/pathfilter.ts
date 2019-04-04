@@ -22,9 +22,11 @@
  * SOFTWARE.
  */
 
+import { IPathFilter, IUrlConfig } from "./types";
+
 const _ = require('underscore');
 
-const matchUrlAgainstPath = (url, path, path_url, wildcard) => {
+const matchUrlAgainstPath = (url: string, path: IPathFilter, path_url: string, wildcard?: string) => {
   // Match the path if it is an exact match with the URL.
   if (path_url === url) {
     return path;
@@ -46,7 +48,7 @@ const matchUrlAgainstPath = (url, path, path_url, wildcard) => {
   }
 };
 
-export const getPathFilter = (url_config, url: string) => {
+export const getPathFilter = (url_config: IUrlConfig, url: string) => {
   let result = {url: "{default}", protected: url_config.protected_by_default},
     i,
     path,
@@ -115,7 +117,7 @@ export const getPathFilter = (url_config, url: string) => {
   return { url: result.url, protected: result.protected };
 };
 
-export const resolve = (url, path_filter) => {
+export const resolve = (url: string, path_filter: string) => {
   let path_segments_regex = /^{(\d*)}/,
     path_segments_match,
     parsed_url = require('url').parse(url),

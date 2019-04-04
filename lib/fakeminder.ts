@@ -30,19 +30,21 @@ const Model = require('./model');
 const pathfilter = require('./pathfilter');
 const util = require('util');
 const fm_util = require('./util');
-let log;
+let log: ILogger;
 
 import Config from './config';
+import { NextFunction, Response } from "express";
+import { AnyFunction, IFormCred, ILogger, IRequest as Request, ISession, ISessionOptions, IUrlType } from "./types";
 
 export default class FakeMinder {
   public readonly config: Config;
-  private readonly sessions;
-  private emptySession;
-  private readonly formcred;
-  private readonly SESSION_COOKIE;
-  private readonly FORMCRED_COOKIE;
+  private readonly sessions: {[id: string]: ISession};
+  private emptySession: Partial<ISession>;
+  private readonly formcred: {[cookie: string]: IFormCred};
+  private readonly SESSION_COOKIE: string;
+  private readonly FORMCRED_COOKIE: string;
 
-  constructor(filename, logger) {
+  constructor(filename: string, logger: ILogger) {
     log = logger;
 
     this.config = new Config();
@@ -55,42 +57,42 @@ export default class FakeMinder {
     this.FORMCRED_COOKIE = this.config.siteminder().formcred_cookie;
   }
 
-  private _getUrl = (url_type) => {
+  private _getUrl = (url_type: keyof IUrlType) => {
     return this.config.upstreamApp('sample_target')[url_type];
   };
 
-  private _createNewSession = (new_session) => {
+  private _createNewSession = (new_session: ISession) => {
     this.sessions[new_session.session_id] = new_session;
   };
 
-  private _removeSession = (session_id) => {
+  private _removeSession = (session_id: string) => {
     log.verbose('fakeminder', 'SessionID %s has ended',  session_id);
     delete(this.sessions[session_id]);
   };
 
-  private _redirectTo = (res, url_type) => {
+  private _redirectTo = (res: Response, url_type: keyof IUrlType) => {
     const url = this._getUrl(url_type);
     this._redirectToUrl(res, url);
   };
 
-  private _redirectToUrl = (res, url) => {
+  private _redirectToUrl = (res: Response, url: string) => {
     res.statusCode = 302;
     res.setHeader('Location', url);
     res.end();
   };
 
-  private _setCookie = (req, res, cookie_name, cookie_value, options?) => {
+  private _setCookie = (req: Request, res: Response, cookie_name: string, cookie_value: string, options?: any) => {
     const cookieJar = new Cookies(req, res);
     cookieJar.set(cookie_name, cookie_value, options);
   };
 
-  private _badRequest = (res, message) => {
+  private _badRequest = (res: Response, message: string) => {
       res.statusCode = 400;
       res.write(message);
       res.end();
   };
 
-  private _notAuthenticated = (req, res) => {
+  private _notAuthenticated = (req: Request, res: Response) => {
     let url;
 
     if (this.config.upstreamApp('sample_target').not_authenticated) {
@@ -105,7 +107,7 @@ export default class FakeMinder {
     }
   };
 
-  private redirectOr404 = (req, res, url_type, response_message) => {
+  private redirectOr404 = (req: Request, res: Response, url_type: keyof IUrlType, response_message: string) => {
     let url;
 
     if (this.config.upstreamApp('sample_target')[url_type]) {
@@ -120,20 +122,20 @@ export default class FakeMinder {
     }
   };
 
-  private _accountLocked = (req, res) => {
+  private _accountLocked = (req: Request, res: Response) => {
     this.redirectOr404(req, res, 'account_locked', 'Account locked. A redirect URL for account_locked is not defined.');
   };
 
-  private _badLogin = (req, res) => {
+  private _badLogin = (req: Request, res: Response) => {
     this.redirectOr404(req, res, 'bad_login', 'Bad login. A redirect URL for bad_login is not defined.');
   };
 
-  private _badPassword = (req, res) => {
+  private _badPassword = (req: Request, res: Response) => {
     this.redirectOr404(req, res, 'bad_password', 'Bad password. A redirect URL for bad_password is not defined.');
   };
 
-  public middleware = (req, res, next) => {
-    const func_array = [];
+  public middleware = (req: Request, res: Response, next: NextFunction) => {
+    const func_array: AnyFunction[] = [];
     // var self = this;
     const end_func = () => {
     };
@@ -155,7 +157,7 @@ export default class FakeMinder {
   };
 
   /** Parse inbound SMSESSION cookie and load session details */
-  public init = (req, res, next) => {
+  public init = (req: Request, res: Response, next: NextFunction) => {
     const cookieJar = new Cookies(req, res),
       smsession = cookieJar.get(this.SESSION_COOKIE),
       existing_session = this.sessions[smsession];
@@ -170,7 +172,7 @@ export default class FakeMinder {
   };
 
   /** Handle logon requests by processing form POST data and generating a FORMCRED cookie */
-  public logon = (req, res, next, end) => {
+  public logon = (req: Request, res: Response, next: NextFunction, end: () => void) => {
     let post_data: any = '',
       formcred,
       user,
@@ -228,13 +230,13 @@ export default class FakeMinder {
   };
 
   /** Handle requests for protected resources. If a login/password change is in process validate accordingly */
-  public protected = (req, res, next, options) => {
-    let auth_headers;
+  public protected = (req: Request, res: Response, next: NextFunction, options: ISessionOptions) => {
+    let auth_headers: {[name: string]: string};
     const cookieJar = new Cookies(req, res);
     const formcred_cookie = cookieJar.get(this.FORMCRED_COOKIE);
-    let formcred_session;
+    let formcred_session: IFormCred | undefined;
     let existing_session;
-    let new_session;
+    let new_session: ISession;
     let user;
     let path_filter;
 
@@ -250,7 +252,7 @@ export default class FakeMinder {
     }
 
     // Check the FORMCRED cookie if one exists and act accordingly
-    if (_.isUndefined(formcred_session) === false) {
+    if (formcred_session !== undefined) {
       log.verbose('#protected', 'Found existing FORMCRED session %s', formcred_session.formcred_id);
       // Remove for formcred session from self before doing any validation. FORMCRED is only a transient value that is not required after this step.
       delete(this.formcred[formcred_cookie]);
@@ -269,7 +271,11 @@ export default class FakeMinder {
         // Login was successful
         case Model.FormCredStatus.good_login:
           Object.keys(this.sessions).filter((session) => {
-            return this.sessions[session].name === formcred_session.name
+            if (formcred_session && formcred_session.user) {
+              return this.sessions[session].user.name === formcred_session.user.name
+            } else {
+              return false
+            }
           }).forEach((session) => {
             delete(this.sessions[session]);
           });
@@ -325,7 +331,7 @@ export default class FakeMinder {
     next();
   };
 
-  public logoff = (req, res, next) => {
+  public logoff = (req: Request, res: Response, next: NextFunction) => {
     var current_session = req.fm_session;
 
     if (req.url === this._getUrl('logoff')) {
@@ -343,7 +349,7 @@ export default class FakeMinder {
   };
 
   /** Set an SMSESSION cookie if required */
-  public end = (req, res, next) => {
+  public end = (req: Request, res: Response, next: NextFunction) => {
     if (req.fm_session) {
       req.fm_session.resetExpiration(this.config.siteminder().session_expiry_minutes);
       this._setCookie(req, res, this.SESSION_COOKIE, req.fm_session.session_id, { domain: this.config.siteminder().sm_cookie_domain });
