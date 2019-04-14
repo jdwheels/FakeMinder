@@ -1,8 +1,8 @@
 var expect = require('expect.js');
 
 describe('PathFilter', function() {
-  var subject = require('../build/pathfilter'),
-      url_config;
+  var subject = require('../build/pathfilter');
+  var url_config;
 
   beforeEach(function() {
     url_config = {};
@@ -17,8 +17,8 @@ describe('PathFilter', function() {
 
       it('uses the default value is there are no rules', function() {
         // Arrange
-        var url = '/abc/123',
-            result;
+        var url = '/abc/123';
+        var result;
 
         // Act
         result = subject.getPathFilter(url_config, url);
@@ -35,8 +35,8 @@ describe('PathFilter', function() {
 
       it('uses the default value is there are no rules', function() {
         // Arrange
-        var url = '/abc/123',
-            result;
+        var url = '/abc/123';
+        var result;
 
         // Act
         result = subject.getPathFilter(url_config, url);

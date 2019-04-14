@@ -1,48 +1,48 @@
-var expect = require('expect.js'),
-    fs = require('fs'),
-    url = require('url'),
-    cookie = require('cookie'),
-    _ = require('underscore'),
-    FakeMinder = require('../build/fakeminder').default,
-    Model = require('../build/model'),
-    log = require('../build/logger'),
-    sinon = require('sinon');
+var expect = require('expect.js');
+var fs = require('fs');
+var url = require('url');
+var cookie = require('cookie');
+var _ = require('underscore');
+var FakeMinder = require('../build/fakeminder').default;
+var Model = require('../build/model');
+var log = require('../build/logger');
+var sinon = require('sinon');
 
 describe('FakeMinder', function() {
-  var subject,
-      emptySession,
-      request,
-      response,
-      log_stub = sinon.stub(log),
-      sample_target_url;
+  var subject;
+  var emptySession;
+  var request;
+  var response;
+  var log_stub = sinon.stub(log);
+  var sample_target_url;
 
   beforeEach(function() {
     subject = new FakeMinder('config.json', log_stub);
     sample_target_url = url.format({
         protocol: 'http:',
         hostname: subject.config.upstreamApp('sample_target').hostname,
-        port: subject.config.proxy().port
+        port: subject.config.proxy().port,
     });
-    emptySession = { 'user':'' };
+    emptySession = { 'user': '' };
     request = {};
     response = {};
-    request['method'] = 'GET';
-    request['url'] = '/';
-    response['setHeader'] = function(header, value) {
+    request.method = 'GET';
+    request.url = '/';
+    response.setHeader = function(header, value) {
       this.headers = this.headers || {};
       this.headers[header] = value;
     };
     // Stubs for supporting cookie.js
-    request['connection'] = { 'encrypted':false };
-    request['headers'] = { host: 'localhost:8000' };
-    response['headers'] = {};
-    response['getHeader'] = function(header) {
+    request.connection = { 'encrypted': false };
+    request.headers = { host: 'localhost:8000' };
+    response.headers = {};
+    response.getHeader = function(header) {
       this.headers = this.headers || {};
       return this.headers[header];
     };
-    response['end'] = function() {};
-    response['write'] = function(content) {
-      this['body'] = content;
+    response.end = function() {};
+    response.write = function(content) {
+      this.body = content;
     };
   });
 
@@ -50,14 +50,14 @@ describe('FakeMinder', function() {
     for (var session_id in subject.sessions) {
       if (subject.sessions[session_id].user.name === 'bob') {
         var found_session = subject.sessions[session_id];
-        found_session['session_id'] = session_id;
+        found_session.session_id = session_id;
         return found_session;
       }
     }
   };
 
-  var getFmSession = function(request) {
-    return request.fm_session;
+  var getFmSession = function(req) {
+    return req.fm_session;
   };
 
   var getTargetSiteUrl = function(url_type) {
@@ -96,7 +96,7 @@ describe('FakeMinder', function() {
       it('sets fm_session to an empty object', function(done) {
         // Arrange
         var expected_value;
-        request.headers['cookie'] = 'SMSESSION=foo';
+        request.headers.cookie = 'SMSESSION=foo';
 
         // Act
         subject.init(request, response, function() {
@@ -112,7 +112,7 @@ describe('FakeMinder', function() {
         // Arrange
         var session = new Model.Session();
         subject.sessions[session.session_id] = session;
-        request.headers['cookie'] = 'SMSESSION=' + session.session_id;
+        request.headers.cookie = 'SMSESSION=' + session.session_id;
 
         // Act
         subject.init(request, response, function() {
@@ -124,9 +124,9 @@ describe('FakeMinder', function() {
   });
 
   describe('logon()', function() {
-    var post_data,
-        target = 'http://localhost:8000/protected/home?foo=bar',
-        user;
+    var post_data;
+    var target = 'http://localhost:8000/protected/home?foo=bar';
+    var user;
 
     beforeEach(function() {
       request.url = subject.config.siteminder().login_fcc;
@@ -145,8 +145,8 @@ describe('FakeMinder', function() {
 
     it('does not use a case sensitive comparison of form fields', function() {
       // Arrange
-      var cookies,
-          formcred_id;
+      var cookies;
+      var formcred_id;
       post_data = 'user=' + user + '&password=test1234&target=' + target;
 
       // Act
@@ -166,7 +166,7 @@ describe('FakeMinder', function() {
         subject.logon(request, response, undefined, function() {
           // Assert
           expect(response.statusCode).to.be(302);
-          expect(response.headers['Location']).to.equal(target);
+          expect(response.headers.Location).to.equal(target);
           done();
         });
       });
@@ -181,8 +181,8 @@ describe('FakeMinder', function() {
         it('returns a 400 response', function(done) {
           // Arrange
           // subject.config.siteminder.smagentname = "custom_agent";
-          subject.config._config.siteminder.smagentname = "custom_agent";
-          post_data = 'USER=' + user + '&PASSWORD=test1234&TARGET=' + target + "&SMAGENTNAME=blah";
+          subject.config._config.siteminder.smagentname = 'custom_agent';
+          post_data = 'USER=' + user + '&PASSWORD=test1234&TARGET=' + target + '&SMAGENTNAME=blah';
 
           // Act
           subject.logon(request, response, undefined, function() {
@@ -197,7 +197,7 @@ describe('FakeMinder', function() {
       describe('and the form does not contain a an smagentname value', function() {
         it('returns a 400 response', function(done) {
           // Arrange
-          subject.config._config.siteminder.smagentname = "custom_agent";
+          subject.config._config.siteminder.smagentname = 'custom_agent';
           post_data = 'USER=' + user + '&PASSWORD=test1234&TARGET=' + target;
 
           // Act
@@ -382,7 +382,7 @@ describe('FakeMinder', function() {
       var user_bob = new Model.User({
         'name': 'bob',
         'password': 'test1234',
-        'auth_headers': {'header1':'auth1', 'header2':'auth2', 'header3':'auth3'}
+        'auth_headers': {'header1': 'auth1', 'header2': 'auth2', 'header3': 'auth3'},
       });
       subject.config.users[user_bob.name] = user_bob;
     });
@@ -397,13 +397,13 @@ describe('FakeMinder', function() {
 
         // Assert
         expect(response.statusCode).to.be(302);
-        expect(response.headers['Location']).to.equal(expected_location);
+        expect(response.headers.Location).to.equal(expected_location);
       });
 
       describe('and the not_authenticated URL is not defined', function() {
         it('returns a 401 response', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].not_authenticated = '';
+          subject.config._config.upstreamApps.sample_target.not_authenticated = '';
 
           // Act
           subject.protected(request, response, function() {});
@@ -414,13 +414,15 @@ describe('FakeMinder', function() {
 
         it('returns a WWW-Authenticate header requesting basic authentication', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].not_authenticated = '';
+          subject.config._config.upstreamApps.sample_target.not_authenticated = '';
 
           // Act
           subject.protected(request, response, function() {});
 
           // Assert
-          expect(response.headers['WWW-Authenticate']).to.be('Basic realm="Couldn\'t find a redirect URL for not_authenticated"');
+          expect(response.headers['WWW-Authenticate'])
+              .to.be('Basic realm="Couldn\'t find a redirect URL for not_authenticated"',
+          );
         });
       });
     });
@@ -432,12 +434,12 @@ describe('FakeMinder', function() {
         var session = new Model.Session({
           'session_id': 'xyz',
           'user': new Model.User({'name': 'bob'}),
-          'expiration': sessionExpiry.toJSON()
+          'expiration': sessionExpiry.toJSON(),
         });
         request.fm_session = session;
-        session.user.auth_headers['header1'] = 'auth1';
-        session.user.auth_headers['header2'] = 'auth2';
-        session.user.auth_headers['header3'] = 'auth3';
+        session.user.auth_headers.header1 = 'auth1';
+        session.user.auth_headers.header2 = 'auth2';
+        session.user.auth_headers.header3 = 'auth3';
         subject.sessions[session.session_id] = session;
       });
 
@@ -445,9 +447,9 @@ describe('FakeMinder', function() {
         // Act
         subject.protected(request, response, function() {
           // Assert
-          expect(request.headers['header1']).to.equal('auth1');
-          expect(request.headers['header2']).to.equal('auth2');
-          expect(request.headers['header3']).to.equal('auth3');
+          expect(request.headers.header1).to.equal('auth1');
+          expect(request.headers.header2).to.equal('auth2');
+          expect(request.headers.header3).to.equal('auth3');
           done();
         });
       });
@@ -469,7 +471,7 @@ describe('FakeMinder', function() {
         var session = new Model.Session({
           'session_id': 'xyz',
           'user': new Model.User({'name': 'bob'}),
-          'expiration': sessionExpiry.toJSON()
+          'expiration': sessionExpiry.toJSON(),
         });
         request.fm_session = session;
         subject.sessions[session.session_id] = session;
@@ -484,13 +486,13 @@ describe('FakeMinder', function() {
 
         // Assert
         expect(response.statusCode).to.be(302);
-        expect(response.headers['Location']).to.equal(expected_location);
+        expect(response.headers.Location).to.equal(expected_location);
       });
 
       describe('and the not_authenticated URL is not defined', function() {
         it('returns a 401 response', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].not_authenticated = '';
+          subject.config._config.upstreamApps.sample_target.not_authenticated = '';
 
           // Act
           subject.protected(request, response, function() {});
@@ -501,13 +503,15 @@ describe('FakeMinder', function() {
 
         it('returns a WWW-Authenticate header requesting basic authentication', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].not_authenticated = '';
+          subject.config._config.upstreamApps.sample_target.not_authenticated = '';
 
           // Act
           subject.protected(request, response, function() {});
 
           // Assert
-          expect(response.headers['WWW-Authenticate']).to.be('Basic realm="Couldn\'t find a redirect URL for not_authenticated"');
+          expect(response.headers['WWW-Authenticate'])
+              .to.be('Basic realm="Couldn\'t find a redirect URL for not_authenticated"',
+          );
         });
       });
     });
@@ -519,10 +523,10 @@ describe('FakeMinder', function() {
         formcred = new Model.FormCred({
           'formcred_id': 'fc123',
           'user': new Model.User({'name': 'bob'}),
-          'status': Model.FormCredStatus.good_login
+          'status': Model.FormCredStatus.good_login,
         });
         subject.formcred[formcred.formcred_id] = formcred;
-        request.headers['cookie'] = 'FORMCRED=' + formcred.formcred_id;
+        request.headers.cookie = 'FORMCRED=' + formcred.formcred_id;
       });
 
       describe('and the user associated with the FORMCRED is currently locked', function() {
@@ -536,14 +540,14 @@ describe('FakeMinder', function() {
 
           // Assert
           expect(response.statusCode).to.be(302);
-          expect(response.headers['Location']).to.equal(expected_location);
+          expect(response.headers.Location).to.equal(expected_location);
         });
 
         describe('and the account_locked redirect URI is not defined', function() {
           it('returns a 404 response', function() {
             // Arrange
             subject.config.users()[0].locked = true;
-            subject.config._config.upstreamApps['sample_target'].account_locked = '';
+            subject.config._config.upstreamApps.sample_target.account_locked = '';
 
             // Act
             subject.protected(request, response, function() {});
@@ -559,7 +563,7 @@ describe('FakeMinder', function() {
         // Arrange
         var session = new Model.Session({
           'session_id': 'xyz',
-          'user': new Model.User({'name': 'bob'})
+          'user': new Model.User({'name': 'bob'}),
         });
         subject.sessions[session.session_id] = session;
 
@@ -631,7 +635,7 @@ describe('FakeMinder', function() {
         // Arrange
         var session = new Model.Session({
           'session_id': 'xyz',
-          'user': new Model.User({'name':' bob'})
+          'user': new Model.User({'name': ' bob'}),
         });
         subject.sessions[session.session_id] = session;
 
@@ -654,18 +658,18 @@ describe('FakeMinder', function() {
     });
 
     describe('and the FORMCRED cookie maps to a bad login', function() {
-      var user,
-          formcred;
+      var user;
+      var formcred;
 
       beforeEach(function() {
         user = new Model.User({'name': 'bob'});
         formcred = new Model.FormCred({
           'formcred_id': 'fc123',
           'user': user,
-          'status': Model.FormCredStatus.bad_login
+          'status': Model.FormCredStatus.bad_login,
         });
         subject.formcred[formcred.formcred_id] = formcred;
-        request.headers['cookie'] = 'FORMCRED=' + formcred.formcred_id;
+        request.headers.cookie = 'FORMCRED=' + formcred.formcred_id;
         subject.config._config.users = [user];
       });
 
@@ -678,13 +682,13 @@ describe('FakeMinder', function() {
 
         // Assert
         expect(response.statusCode).to.be(302);
-        expect(response.headers['Location']).to.equal(expected_location);
+        expect(response.headers.Location).to.equal(expected_location);
       });
 
       describe('and the bad_login redirect URI is not defined', function() {
         it('returns a 404 response', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].bad_login = '';
+          subject.config._config.upstreamApps.sample_target.bad_login = '';
 
           // Act
           subject.protected(request, response, function() {});
@@ -706,18 +710,18 @@ describe('FakeMinder', function() {
     });
 
     describe('and the FORMCRED cookie maps to a bad password', function() {
-      var user,
-          formcred;
+      var user;
+      var formcred;
 
       beforeEach(function() {
         user = new Model.User({'name': 'bob'});
         formcred = new Model.FormCred({
           'formcred_id': 'fc123',
           'user': user,
-          'status': Model.FormCredStatus.bad_password
+          'status': Model.FormCredStatus.bad_password,
         });
         subject.formcred[formcred.formcred_id] = formcred;
-        request.headers['cookie'] = 'FORMCRED=' + formcred.formcred_id;
+        request.headers.cookie = 'FORMCRED=' + formcred.formcred_id;
       });
 
       it('responds with a redirect to the bad password URI', function() {
@@ -729,13 +733,13 @@ describe('FakeMinder', function() {
 
         // Assert
         expect(response.statusCode).to.be(302);
-        expect(response.headers['Location']).to.equal(expected_location);
+        expect(response.headers.Location).to.equal(expected_location);
       });
 
       describe('and the bad_password redirect URI is not defined', function() {
         it('returns a 404 response', function() {
           // Arrange
-          subject.config._config.upstreamApps['sample_target'].bad_password = '';
+          subject.config._config.upstreamApps.sample_target.bad_password = '';
 
           // Act
           subject.protected(request, response, function() {});
@@ -780,14 +784,14 @@ describe('FakeMinder', function() {
 
           // Assert
           expect(response.statusCode).to.be(302);
-          expect(response.headers['Location']).to.equal(expected_location);
+          expect(response.headers.Location).to.equal(expected_location);
         });
 
         describe('and the account_locked redirect URI is not defined', function() {
           it('returns a 404 response', function() {
             // Arrange
             subject.config.users()[0].locked = true;
-            subject.config._config.upstreamApps['sample_target'].account_locked = '';
+            subject.config._config.upstreamApps.sample_target.account_locked = '';
 
             // Act
             subject.protected(request, response, function() {});
@@ -824,7 +828,7 @@ describe('FakeMinder', function() {
         var formcred = new Model.FormCred({
           'formcred_id': 'fc123',
           'user': user,
-          'status': Model.FormCredStatus.bad_password
+          'status': Model.FormCredStatus.bad_password,
         });
 
         // Act
@@ -838,15 +842,15 @@ describe('FakeMinder', function() {
     it('redirects using a path filter to reuse the top level path of the target URL', function() {
       // Arrange
       request.url = '/keep_this_folder/protected';
-      subject.config._config.upstreamApps['sample_target'].path_filters[0].url = '/keep_this_folder/protected';
-      subject.config._config.upstreamApps['sample_target'].not_authenticated = '{1}/system/error/notauthenticated';
+      subject.config._config.upstreamApps.sample_target.path_filters[0].url = '/keep_this_folder/protected';
+      subject.config._config.upstreamApps.sample_target.not_authenticated = '{1}/system/error/notauthenticated';
       var expected = 'http://localhost:8000/keep_this_folder/system/error/notauthenticated';
 
       // Act
       subject.protected(request, response, function() {});
 
       // Assert
-      expect(response.headers['Location']).to.be(expected);
+      expect(response.headers.Location).to.be(expected);
     });
   });
 
@@ -870,7 +874,7 @@ describe('FakeMinder', function() {
         // Arrange
         request.url = '/system/logout';
         var session = new Model.Session({'session_id': 'session2'});
-        subject.sessions = {'session1':{}, 'session2':session, 'session3':{}};
+        subject.sessions = {'session1': {}, 'session2': session, 'session3': {}};
         request.fm_session = session;
 
         // Act
@@ -885,7 +889,7 @@ describe('FakeMinder', function() {
         // Arrange
         request.url = '/system/logout';
         var session = new Model.Session({'session_id': 'session2'});
-        subject.sessions = {'session1':{}, 'session2':session, 'session3':{}};
+        subject.sessions = {'session1': {}, 'session2': session, 'session3': {}};
         request.fm_session = session;
 
         // Act

@@ -3,8 +3,8 @@ var expect = require('expect.js');
 var FmChain = require('../build/chain').default;
 
 describe('FmChain', function() {
-  var subject,
-      foo;
+  var subject;
+  var foo;
 
   beforeEach(function() {
     subject = new FmChain();
@@ -17,7 +17,7 @@ describe('FmChain', function() {
       subject.then(foo);
 
       // Assert
-      expect(subject['queue']).to.contain(foo);
+      expect(subject.queue).to.contain(foo);
     });
 
     it('returns itself to allow chained calls', function() {
@@ -40,7 +40,7 @@ describe('FmChain', function() {
       subject.then(foo3);
 
       // Assert
-      expect(subject['queue']).to.eql([foo1, foo2, foo3]);
+      expect(subject.queue).to.eql([foo1, foo2, foo3]);
     });
   });
 
@@ -54,7 +54,7 @@ describe('FmChain', function() {
         result.push(i);
         done();
       };
-      subject['queue'] = [foo, foo, foo];
+      subject.queue = [foo, foo, foo];
 
       // Act
       subject.execute();
@@ -71,7 +71,7 @@ describe('FmChain', function() {
         err_func();
         done();
       };
-      subject['queue'] = [foo];
+      subject.queue = [foo];
 
       // Act
       subject.execute();
@@ -80,22 +80,25 @@ describe('FmChain', function() {
       expect(err_func).to.be.ok();
     });
 
-    it('passes a callback function for handling completion as the second parameter of each function call', function(done) {
-      // Arrange
-      var result_func;
-      foo = function(err, result) {
-        result_func = result;
-        result_func();
-        done();
-      };
-      subject['queue'] = [foo];
+    it(
+        'passes a callback function for handling completion as the second parameter of each function call',
+        function(done) {
+          // Arrange
+          var result_func;
+          foo = function(err, result) {
+            result_func = result;
+            result_func();
+            done();
+          };
+          subject.queue = [foo];
 
-      // Act
-      subject.execute();
+          // Act
+          subject.execute();
 
-      // Assert
-      expect(result_func).to.be.ok();
-    });
+          // Assert
+          expect(result_func).to.be.ok();
+        },
+    );
 
     it('passes data from one function to the next in the chain', function(done) {
       // Arrange
@@ -108,7 +111,7 @@ describe('FmChain', function() {
           result(data);
         }
       };
-      subject['queue'] = [foo, foo, foo];
+      subject.queue = [foo, foo, foo];
 
       // Act
       subject.execute();

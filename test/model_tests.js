@@ -1,6 +1,6 @@
-var expect = require('expect.js'),
-    _ = require('underscore'),
-    Model = require('../build/model');
+var expect = require('expect.js');
+var _ = require('underscore');
+var Model = require('../build/model');
 
 describe('User', function() {
   describe('#ctor', function() {
@@ -31,7 +31,7 @@ describe('User', function() {
     it('has a list of auth_header key/pairs', function() {
       // Arrange
       var subject;
-      var expected = {'header_1':'key_c', 'header_2':'key_b', 'header_3':'key_a'};
+      var expected = {'header_1': 'key_c', 'header_2': 'key_b', 'header_3': 'key_a'};
 
       // Act
       subject = new Model.User({'auth_headers': expected});
@@ -192,8 +192,8 @@ describe('Session', function() {
 
     it('has a user', function() {
       // Arrange
-      var subject,
-          expected = new Model.User('bob', 'test1234', {});
+      var subject;
+      var expected = new Model.User('bob', 'test1234', {});
 
       // Act
       subject = new Model.Session({'session_id': 'session_123', 'user': expected});
@@ -204,8 +204,8 @@ describe('Session', function() {
 
     it('has an expiration', function() {
       // Arrange
-      var subject,
-          expected = new Date();
+      var subject;
+      var expected = new Date();
 
       // Act
       subject = new Model.Session({'expiration': expected});
@@ -307,8 +307,8 @@ describe('FormCred', function() {
 
     it('has a user', function() {
       // Arrange
-      var subject,
-          expected = new Model.User('bob', 'test1234', {});
+      var subject;
+      var expected = new Model.User('bob', 'test1234', {});
 
       // Act
       subject = new Model.FormCred({'user': expected});
@@ -319,8 +319,8 @@ describe('FormCred', function() {
 
     it('has a status', function() {
       // Arrange
-      var subject,
-          expected = 'GOOD_CREDS';
+      var subject;
+      var expected = 'GOOD_CREDS';
 
       // Act
       subject = new Model.FormCred({'status': expected});
@@ -331,8 +331,8 @@ describe('FormCred', function() {
 
     it('has a target_url', function() {
       // Arrange
-      var subject,
-          expected = 'http://foo.com/bar';
+      var subject;
+      var expected = 'http://foo.com/bar';
 
       // Act
       subject = new Model.FormCred({'target_url': expected});

@@ -1,22 +1,21 @@
-var expect = require('expect.js'),
-    fs = require('fs'),
-    sinon = require('sinon'),
-    Config = require('../build/config').default;
+var expect = require('expect.js');
+var fs = require('fs');
+var sinon = require('sinon');
+var Config = require('../build/config').default;
 
 describe('Config', function() {
-  var subject,
-      fs_stub,
-      config_json,
-      config_file = 'config.js';
-
+  var subject;
+  var fs_stub;
+  var config_json;
+  var config_file = 'config.js';
 
   beforeEach(function() {
     config_json = JSON.stringify({
       proxy: {
         port: 8000,
         upstreamApps: [
-          'sample_target'
-        ]
+          'sample_target',
+        ],
       },
       siteminder: {
         sm_cookie: 'SMSESSION',
@@ -44,12 +43,12 @@ describe('Config', function() {
           account_locked: '/system/error/accountlocked',
           protected_by_default: false,
           path_filters: [
-            { url: '/protected', protected: true }
-          ]
+            { url: '/protected', protected: true },
+          ],
         },
-        'app1': {}
+        'app1': {},
       },
-      users: []
+      users: [],
     });
 
     subject = new Config();
@@ -112,7 +111,7 @@ describe('Config', function() {
 
     it('loads the upstreamApps configuration', function() {
       // Arrange
-      var expected = JSON.parse(config_json).upstreamApps['sample_target'];
+      var expected = JSON.parse(config_json).upstreamApps.sample_target;
       fs_stub = sinon.stub(fs, 'readFileSync');
       fs_stub.returns(config_json);
 

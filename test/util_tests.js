@@ -1,6 +1,6 @@
-var expect = require('expect.js'),
-    sinon = require('sinon'),
-    util = require('../build/util');
+var expect = require('expect.js');
+var sinon = require('sinon');
+var util = require('../build/util');
 
 describe('Util', function() {
   describe('#redirectUrlFromRequest', function() {
@@ -8,7 +8,7 @@ describe('Util', function() {
       // Arrange
       var req = {
         headers: { host: 'example.com:8000' },
-        connection: {}
+        connection: {},
       };
       var path = '/foo/bar?baz=bar#title';
       var expected = 'http://example.com:8000/foo/bar?baz=bar#title';
@@ -25,7 +25,7 @@ describe('Util', function() {
       // Arrange
       var req = {
         headers: { host: 'example.com:8000' },
-        connection: {}
+        connection: {},
       };
       var path = '';
       var expected = 'http://example.com:8000/';
@@ -42,7 +42,7 @@ describe('Util', function() {
       // Arrange
       var req = {
         headers: { host: 'example.com:8000' },
-        connection: { encrypted: true }
+        connection: { encrypted: true },
       };
       var path = '';
       var expected = 'https://example.com:8000/';

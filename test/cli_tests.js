@@ -1,19 +1,19 @@
-var assert = require('assert'),
-    expect = require('expect.js'),
-    cli = require('../build/cli');
+var assert = require('assert');
+var expect = require('expect.js');
+var cli = require('../build/cli');
 
 describe('Cli', function() {
   describe('#create', function() {
-    var inquirer,
-        args,
-        writeFile;
+    var inquirer;
+    var args;
+    var writeFile;
 
     beforeEach(function() {
       // Setup stubs & mocks
       inquirer = {
         prompt: function(questions, callback) {
           callback({});
-        }
+        },
       };
       writeFile = function(filename, data, callback) {
         callback();
