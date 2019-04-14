@@ -30,8 +30,7 @@
     "express": "^4.16.4",
     "http-proxy": "^1.17.0",
     "inquirer": "^6.3.1",
-    "npmlog": "^4.1.2",
-    "underscore": "^1.9.1"
+    "npmlog": "^4.1.2"
   },
   "devDependencies": {
     "@types/cookies": "^0.7.1",
@@ -41,7 +40,6 @@
     "@types/node": "^11.13.4",
     "@types/npmlog": "^4.1.1",
     "@types/request": "^2.48.1",
-    "@types/underscore": "^1.8.14",
     "casperjs": "^1.1.4",
     "cookie": "^0.3.1",
     "expect.js": "^0.3.1",

@@ -26,7 +26,6 @@ import Cookies from 'cookies';
 import { NextFunction } from 'express';
 import { IncomingMessage, ServerResponse } from 'http';
 import qs from 'querystring';
-import _ from 'underscore';
 import util from 'util';
 import Config from './config';
 import * as Model from './model';
@@ -221,7 +220,7 @@ export default class FakeMinder {
       });
 
       // Search for the user, validate the password and set a status accordingly
-      user = _.findWhere(this.config.users(), {name: post_data.user}) as IUser;
+      user = this.config.users().find((u) => u.name === post_data.user) as IUser;
       formcred.user = user;
       if (user) {
         if (user.password === post_data.password) {
@@ -272,7 +271,8 @@ export default class FakeMinder {
       delete(this.formcred[formcred_cookie]);
 
       if (formcred_session.user) {
-        user = _.findWhere(this.config.users(), {name: formcred_session.user.name}) as IUser;
+        const sessionName = formcred_session.user.name;
+        user = this.config.users().find((u) => u.name === sessionName) as IUser;
         user = new Model.User(user);
         if (user && user.locked) {
           log.warn('#protected', 'Account for user %s is currently locked', user.name);
@@ -324,7 +324,7 @@ export default class FakeMinder {
 
           return;
       }
-    } else if (_.isUndefined(req.fm_session)) {
+    } else if (!req.fm_session) {
       log.warn('#protected', 'Session not found');
       return this._notAuthenticated(req, res);
     } else if (req.fm_session.hasExpired()) {

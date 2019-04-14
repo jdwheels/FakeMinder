@@ -2,7 +2,6 @@ var expect = require('expect.js');
 var fs = require('fs');
 var url = require('url');
 var cookie = require('cookie');
-var _ = require('underscore');
 var FakeMinder = require('../build/fakeminder').default;
 var Model = require('../build/model');
 var log = require('../build/logger');
@@ -239,7 +238,7 @@ describe('FakeMinder', function() {
 
       it('creates a new FORMCRED that maps to the user', function(done) {
         // Arrange
-        var expected = _.findWhere(subject.config.users(), {'name': user});
+        var expected = subject.config.users().find((u) => u.name === user);
 
         // Act
         subject.logon(request, response, undefined, function() {
@@ -266,7 +265,7 @@ describe('FakeMinder', function() {
 
       it('resets the login_attempts for the user back to zero', function(done) {
         // Arrange
-        var expected = _.findWhere(subject.config.users(), {'name': user});
+        var expected = subject.config.users().find((u) => u.name === user);
         expected.login_attempts = 2;
 
         // Act

@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import _ from 'underscore';
 import { IPathFilter, IUrlConfig } from './types';
 
 const matchUrlAgainstPath = (url: string, path: IPathFilter, path_url: string, wildcard?: string) => {
@@ -58,7 +57,7 @@ export const getPathFilter = (url_config: IUrlConfig, url: string) => {
   let url_segments;
   let match;
 
-  if (!url_config.path_filters || !_.isArray(url_config.path_filters)) {
+  if (!url_config.path_filters || !Array.isArray(url_config.path_filters)) {
     return result;
   }
 

@@ -23,7 +23,6 @@
  */
 
 import crypto from 'crypto';
-import _ from 'underscore';
 import { IFormCred, IFormCredOptions, IFormCredStatus, ISession, ISessionOptions, IUser, IUserOptions } from './types';
 
 export class User implements IUser {
@@ -53,7 +52,7 @@ export class User implements IUser {
   }
 
   public save(data_store: IUserOptions[]) {
-    let record: Partial<IUser> | undefined = _.findWhere(data_store, {name: this.name});
+    let record: Partial<IUser> | undefined = data_store.find((u) => u.name === this.name);
 
     if (!record) {
       record = {};
