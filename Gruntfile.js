@@ -10,7 +10,7 @@ module.exports = function(grunt) {
         'test/**/*.js',
         'sample_target/app.js',
         'sample_target/routes/*.js',
-        'sample_target/test/**/*.js'
+        'sample_target/test/**/*.js',
       ],
       options: {
         curly: true,
@@ -24,6 +24,7 @@ module.exports = function(grunt) {
         boss: true,
         eqnull: true,
         node: true,
+        esversion: 8,
         globals: {
           require: true,
           define: true,
@@ -32,9 +33,9 @@ module.exports = function(grunt) {
           expect: true,
           it: true,
           beforeEach: true,
-          afterEach: true
-        }
-      }
+          afterEach: true,
+        },
+      },
     },
     simplemocha: {
       unit_test: {
@@ -43,8 +44,8 @@ module.exports = function(grunt) {
           globals: ['expect'],
           timeout: 2000,
           ignoreLeaks: false,
-          reporter: 'dot'
-        }
+          reporter: 'dot',
+        },
       },
       integration_test: {
         src: ['sample_target/test/**/*.js'],
@@ -52,35 +53,35 @@ module.exports = function(grunt) {
           globals: ['expect', 'require'],
           timeout: 2000,
           ignoreLeaks: false,
-          reporter: 'spec'
-        }
-      }
+          reporter: 'spec',
+        },
+      },
     },
     watch: {
       files: ['<%= jshint.src %>'],
-      tasks: ['jshint', 'simplemocha']
+      tasks: ['jshint', 'simplemocha'],
     },
     casperjs: {
       options: {},
-      files: {src: ['sample_target/integration_test/**/*.js']}
+      files: {src: ['sample_target/integration_test/**/*.js']},
     },
     express: {
       options: {
-        output: "Express server listening on port .+"
+        output: 'Express server listening on port .+',
       },
       sample_target: {
         options: {
-          script: 'sample_target/app.js'
-        }
-      }
+          script: 'sample_target/app.js',
+        },
+      },
     },
     gitpush: {
       github: {
         options: {
           remote: 'github',
-          branch: 'master'
-        }
-      }
+          branch: 'master',
+        },
+      },
     },
     coverage: {
       options: {
@@ -88,23 +89,23 @@ module.exports = function(grunt) {
           statements: 90,
           branches: 90,
           lines: 90,
-          functions: 90
+          functions: 90,
         },
-        dir: 'coverage'
-      }
+        dir: 'coverage',
+      },
     },
     clean: ['coverage', 'build'],
     open: {
       cover: {
         path: 'coverage/lcov-report/index.html',
-        app: 'Google Chrome'
-      }
+        app: 'Google Chrome',
+      },
     },
     ts: {
       default: {
-        tsconfig: './tsconfig.json'
-      }
-    }
+        tsconfig: './tsconfig.json',
+      },
+    },
   });
 
   // Load JSHint task
@@ -136,18 +137,20 @@ module.exports = function(grunt) {
     grunt.task.run('express:sample_target:stop');
     grunt.task.run('fakeminder-stop');
   });
-  grunt.registerTask('ui-test', 'Execute Casperjs integration tests against the sample app through the proxy', function() {
-    // Make sure failed automation tests don't break the entire task
-    // so we can shutdown both the FakeMinder and Express apps.
-    grunt.option('force', true);
-    grunt.task.run('clear');
-    grunt.task.run('build');
-    grunt.task.run('fakeminder-start');
-    grunt.task.run('express:sample_target');
-    grunt.task.run('casperjs');
-    grunt.task.run('express:sample_target:stop');
-    grunt.task.run('fakeminder-stop');
-  });
+  grunt.registerTask(
+      'ui-test', 'Execute Casperjs integration tests against the sample app through the proxy',
+      function() {
+        // Make sure failed automation tests don't break the entire task
+        // so we can shutdown both the FakeMinder and Express apps.
+        grunt.option('force', true);
+        grunt.task.run('clear');
+        grunt.task.run('build');
+        grunt.task.run('fakeminder-start');
+        grunt.task.run('express:sample_target');
+        grunt.task.run('casperjs');
+        grunt.task.run('express:sample_target:stop');
+        grunt.task.run('fakeminder-stop');
+      });
   grunt.registerTask('cover', ['clear', 'clean', 'istanbul', 'open:cover']);
   grunt.registerTask('cover-check', ['clear', 'clean', 'istanbul', 'coverage']);
 
@@ -160,7 +163,7 @@ module.exports = function(grunt) {
 
     server = grunt.util.spawn({
       cmd: './bin/fakeminder',
-      args: ['start', 'config.json']
+      args: ['start', 'config.json'],
     }, done);
 
     server.stderr.on('data', function(data) {
@@ -195,7 +198,7 @@ module.exports = function(grunt) {
 
     server = grunt.util.spawn({
       cmd: './node_modules/.bin/istanbul',
-      args: ['cover', '_mocha', '--']
+      args: ['cover', '_mocha', '--'],
     }, done);
 
     server.stdout.pipe(process.stdout);
